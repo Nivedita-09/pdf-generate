@@ -1,5 +1,3 @@
-// MyDocument.jsx
-
 import {
   Document,
   Page,
@@ -26,10 +24,21 @@ const MyDocument = ({ data }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
-        <Image
-          src={data.image}
-          style={{ position: "relative", width: "100%", height: "100%" }}
-        />
+        {data.image != null ? (
+          <Image
+            src={data.image}
+            style={{ position: "relative", width: "100%", height: "100%" }}
+          />
+        ) : (
+          <View
+            style={{
+              position: "relative",
+              width: "100%",
+              height: "100%",
+              backgroundColor: "black",
+            }}
+          ></View>
+        )}
         <View style={{ position: "absolute", top: "15%", width: "100%" }}>
           <View
             style={{
@@ -49,7 +58,7 @@ const MyDocument = ({ data }) => (
               }}
             >
               <Text style={{ fontSize: "20px", color: "white" }}>
-                {data.username}
+                {data.name}
               </Text>
               <Text
                 style={{
@@ -219,7 +228,7 @@ const MyDocument = ({ data }) => (
 
 MyDocument.propTypes = {
   data: PropTypes.shape({
-    username: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
     slogan: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     image: PropTypes.object,

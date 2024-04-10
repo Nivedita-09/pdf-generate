@@ -1,40 +1,65 @@
 // App.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { pdf } from "@react-pdf/renderer";
+import { PDFViewer } from "@react-pdf/renderer";
 import MyDocument from "./MyDocument";
+import axios from "axios";
 
 function App() {
   const [data, setData] = useState({
-    id: "",
-    name: "",
-    slogan: "",
-    description: "",
+    id: "1",
+    name: "Testing Thane grp",
+    slogan: "We Are working with you",
+    description:
+      "We Are working with you We Are working with youWe Are working with you We Are working with you",
     image: null,
   });
+  const [pdfBlob, setPdfBlob] = useState(null);
+  const [pdfContent, setPdfContent] = useState(null);
   const handleImageChange = (e) => {
     const imageFile = e.target.files[0];
     setData({ ...data, image: imageFile });
   };
+
+  useEffect(() => {
+    const pdfContent = <MyDocument data={data} />;
+    setPdfContent(pdfContent);
+  }, [data]);
+
   const submitForm = async (e) => {
     e.preventDefault();
     console.log(data);
-
     const pdfContent = <MyDocument data={data} />;
-    // const pdfBlob = await pdf(pdfContent).toBlob();
-    pdf(pdfContent)
-      .toBlob()
-      .then((blob) => {
-        const url = URL.createObjectURL(blob);
-        window.open(url, "_blank");
-      });
-    // const fromData = new FormData();
-    // formData.append("id", data.id);
+
+    const blob = await pdf(pdfContent).toBlob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "your_pdf_name.pdf";
+    setPdfBlob(url);
+    setPdfContent(pdfContent);
+    // a.click();
+    // URL.revokeObjectURL(url);
   };
 
   return (
     <>
       <h1 className="text-3xl font-bold underline">Fill up the form</h1>
       <form onSubmit={submitForm}>
+        <div className="flex flex-row gap-3 p-3 ">
+          <div className="w-1/2 my-2 ">
+            <label>Id</label>{" "}
+            <input
+              type="text"
+              name="name"
+              className="border-blue-600 border w-full p-2"
+              value={data.id}
+              onChange={(e) => {
+                setData({ ...data, id: e.target.value });
+              }}
+            />
+          </div>
+        </div>
         <div className="flex flex-row gap-3 p-3 ">
           <div className="w-1/2 my-2 ">
             <label>Name</label>{" "}
@@ -87,6 +112,25 @@ function App() {
           </button>
         </div>
       </form>
+
+      <div>
+        {pdfContent && (
+          <PDFViewer
+            style={{
+              width: "50%",
+              height: "50vh",
+              margin: "auto",
+              marginTop: "10px",
+              backgroundColor: "red",
+            }}
+            showToolbar={true}
+            width={"100%"}
+            height={"100%"}
+          >
+            {pdfContent}
+          </PDFViewer>
+        )}
+      </div>
     </>
   );
 }
